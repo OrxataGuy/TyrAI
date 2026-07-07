@@ -1,0 +1,29 @@
+[2026-07-07T08:30:51.050Z] [INFO] 
+Cloning repository: git@github.com:mandreu-av/TyrAI.git
+[2026-07-07T08:30:52.719Z] [SUCCESS] Empty repository — starting default configuration...
+[2026-07-07T08:30:52.735Z] [INFO] 
+Initializing ~/.tyr...
+
+[2026-07-07T08:30:52.735Z] [INFO] Directory created: /Users/mandreu/.tyr/commands
+[2026-07-07T08:30:52.735Z] [SUCCESS] Directory created: /Users/mandreu/.tyr/commands
+[2026-07-07T08:30:52.736Z] [SUCCESS] File written: /Users/mandreu/.tyr/aliases
+[2026-07-07T08:30:52.737Z] [SUCCESS] File created: /Users/mandreu/.tyr/aliases
+[2026-07-07T08:30:52.737Z] [SUCCESS] File written: /Users/mandreu/.tyr/plugins
+[2026-07-07T08:30:52.737Z] [SUCCESS] File created: /Users/mandreu/.tyr/plugins
+[2026-07-07T08:30:52.738Z] [SUCCESS] File written: /Users/mandreu/.tyr/map.yml
+[2026-07-07T08:30:52.738Z] [SUCCESS] File created: /Users/mandreu/.tyr/map.yml
+[2026-07-07T08:30:52.738Z] [SUCCESS] File written: /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:30:52.738Z] [SUCCESS] File created: /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:30:52.739Z] [SUCCESS] File written: /Users/mandreu/.tyr/.env.example
+[2026-07-07T08:30:52.739Z] [SUCCESS] File created: /Users/mandreu/.tyr/.env.example
+[2026-07-07T08:30:52.739Z] [SUCCESS] File written: /Users/mandreu/.tyr/.gitignore
+[2026-07-07T08:30:52.739Z] [SUCCESS] File created: /Users/mandreu/.tyr/.gitignore
+[2026-07-07T08:30:52.740Z] [SUCCESS] File written: /Users/mandreu/.tyr/package.json
+[2026-07-07T08:30:52.740Z] [SUCCESS] File created: /Users/mandreu/.tyr/package.json
+[2026-07-07T08:30:52.740Z] [SUCCESS] File written: /Users/mandreu/.tyr/tsconfig.json
+[2026-07-07T08:30:52.740Z] [SUCCESS] File created: /Users/mandreu/.tyr/tsconfig.json
+[2026-07-07T08:30:52.740Z] [INFO] 
+Installing type dependencies in ~/.tyr...
+[2026-07-07T08:30:59.345Z] [SUCCESS] Dependencies installed successfully.
+[2026-07-07T08:30:59.345Z] [INFO] 
+Pushing initial configuration to repository...
