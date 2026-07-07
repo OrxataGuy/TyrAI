@@ -27,3 +27,57 @@ Installing type dependencies in ~/.tyr...
 [2026-07-07T08:30:59.345Z] [SUCCESS] Dependencies installed successfully.
 [2026-07-07T08:30:59.345Z] [INFO] 
 Pushing initial configuration to repository...
+[2026-07-07T08:31:01.482Z] [SUCCESS] Configuration pushed to repository.
+[2026-07-07T08:31:01.482Z] [INFO] 
+Configuring shell...
+[2026-07-07T08:31:01.484Z] [INFO] Line already present in /Users/mandreu/.zshrc. Skipping.
+[2026-07-07T08:31:01.484Z] [INFO] Line already present in /Users/mandreu/.zshrc. Skipping.
+[2026-07-07T08:31:01.484Z] [SUCCESS] Shell configured: /Users/mandreu/.zshrc
+[2026-07-07T08:31:01.485Z] [INFO] Run: source /Users/mandreu/.zshrc  (or open a new terminal)
+[2026-07-07T08:31:01.485Z] [SUCCESS] 
+Tyr configured successfully.
+[2026-07-07T08:31:01.485Z] [INFO] Configuration directory: /Users/mandreu/.tyr
+[2026-07-07T08:31:01.485Z] [INFO] Linked repository: git@github.com:mandreu-av/TyrAI.git
+[2026-07-07T08:31:01.485Z] [INFO] 
+Next steps:
+[2026-07-07T08:31:01.485Z] [INFO]   tyr gen <name> <file>   Create a new command
+[2026-07-07T08:31:01.485Z] [INFO]   tyr doc                 View API documentation
+[2026-07-07T08:31:28.510Z] [INFO] Validating manifest: https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/ai-manifest.json
+[2026-07-07T08:31:28.571Z] [INFO] Backup created at: /Users/mandreu/.tyr/imported_modules.yaml.bak
+[2026-07-07T08:31:28.572Z] [SUCCESS] File written: /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:31:28.572Z] [SUCCESS] Module 'ai-manifest' registered in /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:31:28.573Z] [INFO] Syncing module 'ai-manifest' (https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/ai-manifest.json)...
+[2026-07-07T08:31:28.777Z] [ERROR] Could not download 'ai:describe' from 'https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/describe-ai.tyr.ts': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/describe-ai.tyr.ts
+[2026-07-07T08:31:28.777Z] [INFO] Skipped 'ai:describe': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/describe-ai.tyr.ts
+[2026-07-07T08:31:28.943Z] [ERROR] Could not download 'ai:code' from 'https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/code-ai.tyr.ts': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/code-ai.tyr.ts
+[2026-07-07T08:31:28.944Z] [INFO] Skipped 'ai:code': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/code-ai.tyr.ts
+[2026-07-07T08:31:29.102Z] [ERROR] Could not download 'ai:test' from 'https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/test-ai.tyr.ts': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/test-ai.tyr.ts
+[2026-07-07T08:31:29.102Z] [INFO] Skipped 'ai:test': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/test-ai.tyr.ts
+[2026-07-07T08:31:29.273Z] [ERROR] Could not download 'ai:chat' from 'https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/chat-ai.tyr.ts': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/chat-ai.tyr.ts
+[2026-07-07T08:31:29.274Z] [INFO] Skipped 'ai:chat': HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/chat-ai.tyr.ts
+[2026-07-07T08:31:29.275Z] [INFO] Sync finished — installed: 0, updated: 0, skipped: 0, failed: 4.
+[2026-07-07T08:31:29.275Z] [INFO] Failures:
+[2026-07-07T08:31:29.275Z] [INFO]   - ai:describe: HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/describe-ai.tyr.ts
+[2026-07-07T08:31:29.275Z] [INFO]   - ai:code: HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/code-ai.tyr.ts
+[2026-07-07T08:31:29.275Z] [INFO]   - ai:test: HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/test-ai.tyr.ts
+[2026-07-07T08:31:29.275Z] [INFO]   - ai:chat: HTTP GET failed (404): https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/commands/chat-ai.tyr.ts
+[2026-07-07T08:32:51.569Z] [INFO] Validating manifest: https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/ai-manifest.json
+[2026-07-07T08:32:51.631Z] [INFO] Backup created at: /Users/mandreu/.tyr/imported_modules.yaml.bak
+[2026-07-07T08:32:51.631Z] [SUCCESS] File written: /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:32:51.632Z] [SUCCESS] Module 'ai-manifest' registered in /Users/mandreu/.tyr/imported_modules.yaml
+[2026-07-07T08:32:51.632Z] [INFO] Syncing module 'ai-manifest' (https://raw.githubusercontent.com/mandreu-av/TyrCommands/main/ai-manifest.json)...
+[2026-07-07T08:32:51.655Z] [SUCCESS] File written: /Users/mandreu/.tyr/commands/ai-describe.tyr.ts
+[2026-07-07T08:32:51.655Z] [SUCCESS] Installed 'ai:describe' from module 'ai-manifest'.
+[2026-07-07T08:32:51.855Z] [SUCCESS] File written: /Users/mandreu/.tyr/commands/ai-code.tyr.ts
+[2026-07-07T08:32:51.856Z] [SUCCESS] Installed 'ai:code' from module 'ai-manifest'.
+[2026-07-07T08:32:52.091Z] [SUCCESS] File written: /Users/mandreu/.tyr/commands/ai-test.tyr.ts
+[2026-07-07T08:32:52.091Z] [SUCCESS] Installed 'ai:test' from module 'ai-manifest'.
+[2026-07-07T08:32:52.456Z] [SUCCESS] File written: /Users/mandreu/.tyr/commands/ai-chat.tyr.ts
+[2026-07-07T08:32:52.457Z] [SUCCESS] Installed 'ai:chat' from module 'ai-manifest'.
+[2026-07-07T08:32:52.458Z] [INFO] Backup created at: /Users/mandreu/.tyr/map.yml.bak
+[2026-07-07T08:32:52.459Z] [SUCCESS] File written: /Users/mandreu/.tyr/map.yml
+[2026-07-07T08:32:52.461Z] [SUCCESS] File written: /Users/mandreu/.tyr/imported_modules.lock.yml
+[2026-07-07T08:32:52.461Z] [INFO] Sync finished — installed: 4, updated: 0, skipped: 0, failed: 0.
+[2026-07-07T08:33:20.389Z] [SUCCESS] File written: /Users/mandreu/.tyr/manifest.json
+[2026-07-07T08:33:20.389Z] [SUCCESS] manifest.json generated at /Users/mandreu/.tyr/manifest.json (4 commands).
+[2026-07-07T08:33:20.389Z] [INFO] Commit and push it so others can install it with: tyr --add <raw-url-to-manifest.json>

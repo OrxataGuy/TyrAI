@@ -1,1 +1,5 @@
-commands: {}
+commands:
+  ai:describe: ./commands/ai-describe.tyr.ts
+  ai:code: ./commands/ai-code.tyr.ts
+  ai:test: ./commands/ai-test.tyr.ts
+  ai:chat: ./commands/ai-chat.tyr.ts
