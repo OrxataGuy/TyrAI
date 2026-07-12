@@ -1,4 +1,4 @@
-import type { TyrContext } from '@orxataguy/tyr';
+import type { TyrContext } from '@tyrframework/cli';
 
 const JS_TS_EXTENSIONS: Set<string> = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs']);
 
@@ -135,6 +135,23 @@ TODO:
 `;
 }
 
+/**
+ * Scaffolds a test template file next to a given source file — no AI call, purely deterministic.
+ *
+ * For JS/TS sources (.js, .jsx, .ts, .tsx, .mjs, .cjs) it writes a `describe`/`it` skeleton with
+ * TODO placeholders and a list of suggested test cases inferred from the source content (async
+ * flows, error handling, classes, functions). For any other extension it writes a generic Markdown
+ * testing guide with the same suggested-case heuristics. The output path mirrors the source file's
+ * name with `.test` inserted before its extension (or `.test.txt` if the source has none).
+ *
+ * @example
+ * tyr ai:test src/utils/formatDate.ts
+ * // Writes src/utils/formatDate.test.ts with a Jest-style describe/it skeleton
+ *
+ * @example
+ * tyr ai:test scripts/deploy.sh
+ * // Writes scripts/deploy.test.txt with a generic Markdown testing guide
+ */
 export default ({ fail, logger, fs, path }: TyrContext) => {
     return async (args: string[]) => {
         logger.info('Running command: ai:test');

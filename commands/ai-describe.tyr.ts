@@ -1,24 +1,4 @@
-import { statSync } from 'fs';
-import type { TyrContext, TaskPriority } from '@orxataguy/tyr';
-
-/**
- * Generates AI context documentation (AGENTS.md-style) from the project's code.
- *
- * Usage:
- *   tyr ai:describe                                Scans the project (cwd) and generates/overwrites AGENTS.md
- *   tyr ai:describe <directory>                     Same, but for <directory> (relative or absolute)
- *   tyr ai:describe <file> [--priority <level>]      Describes a single file → AGENTS_<file>.md
- *
- * This command is intentionally thin: it only resolves the target, builds the seed prompt (project
- * tree + README for a project, or the file's content for a single file), and hands everything else
- * to AIContextManager.runDescribeAgent(), which owns the tool-use exploration loop (list_directory,
- * read_file, read_manifest, etc. — see AIContextManager.AGENT_TOOLS). AIContextManager also decides
- * the default routing priority per case (baja-media-prioridad for a single file, per the routing
- * matrix in AIVendorManager) unless overridden with --priority.
- *
- * Also consults MemoryManager for past conversations relevant to this target (deterministic
- * keyword match, no extra AI call) and records this run once it succeeds.
- */
+import type { TyrContext, TaskPriority } from '@tyrframework/cli';
 
 const AGENTS_MD_FILENAME = 'AGENTS.md';
 
@@ -27,9 +7,9 @@ const AGENTS_MD_FILENAME = 'AGENTS.md';
 // override with --priority.
 const LARGE_FILE_PRIORITY_THRESHOLD_CHARS = 20000;
 
-function isDirectory(target: string): boolean {
+function isDirectory(fs: any, target: string): boolean {
     try {
-        return statSync(target).isDirectory();
+        return fs.stat(target).isDirectory();
     } catch {
         return false;
     }
@@ -40,6 +20,31 @@ function parseFlag(args: string[], name: string): string | undefined {
     return index !== -1 ? args[index + 1] : undefined;
 }
 
+/**
+ * Generates AI context documentation (AGENTS.md-style) from the project's code.
+ *
+ * This command is intentionally thin: it only resolves the target, builds the seed prompt (project
+ * tree + README for a project, or the file's content for a single file), and hands everything else
+ * to AIContextManager.runDescribeAgent(), which owns the tool-use exploration loop (list_directory,
+ * read_file, read_manifest, etc. — see AIContextManager.AGENT_TOOLS). AIContextManager also decides
+ * the default routing priority per case (baja-media-prioridad for a single file, per the routing
+ * matrix in AIVendorManager) unless overridden with --priority.
+ *
+ * Also consults MemoryManager for past conversations relevant to this target (deterministic
+ * keyword match, no extra AI call) and records this run once it succeeds.
+ *
+ * @example
+ * tyr ai:describe
+ * // Scans the project (cwd) and generates/overwrites AGENTS.md
+ *
+ * @example
+ * tyr ai:describe ./packages/api
+ * // Same, but for ./packages/api (relative or absolute)
+ *
+ * @example
+ * tyr ai:describe ./src/utils/formatDate.ts --priority baja-prioridad
+ * // Describes a single file → AGENTS_formatDate.md
+ */
 export default ({ fail, logger, fs, path, aiContext, prompts, tokens, memory }: TyrContext) => {
     return async (args: string[]) => {
         logger.info('Running command: ai:describe');
@@ -51,7 +56,7 @@ export default ({ fail, logger, fs, path, aiContext, prompts, tokens, memory }: 
         const targetArg = positional[0];
         const resolvedArg = targetArg ? path.resolve(cwd, targetArg) : null;
 
-        if (!targetArg || (resolvedArg && isDirectory(resolvedArg))) {
+        if (!targetArg || (resolvedArg && isDirectory(fs, resolvedArg))) {
             const projectDir = resolvedArg ?? cwd;
             logger.info(`Scanning project at: ${projectDir}`);
 

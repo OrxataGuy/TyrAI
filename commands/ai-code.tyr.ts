@@ -1,13 +1,29 @@
-import { statSync } from 'fs';
-import type { TyrContext, TaskPriority } from '@orxataguy/tyr';
+import type { TyrContext, TaskPriority } from '@tyrframework/cli';
+
+const AGENTS_MD_FILENAME = 'AGENTS.md';
+const MAX_DIFF_LOG_CHARS = 4000;
+
+function isDirectory(fs: any, target: string): boolean {
+    try {
+        return fs.stat(target).isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+function parseFlag(args: string[], name: string): string | undefined {
+    const index = args.indexOf(name);
+    return index !== -1 ? args[index + 1] : undefined;
+}
+
+function stripFlag(args: string[], name: string): string[] {
+    const index = args.indexOf(name);
+    if (index === -1) return args;
+    return [...args.slice(0, index), ...args.slice(index + 2)];
+}
 
 /**
  * Asks the AI to write or modify code inside a project.
- *
- * Usage:
- *   tyr ai:code "<prompt>"                                  Works on the current directory
- *   tyr ai:code <directory> "<prompt>"                      Works on <directory> (relative or absolute)
- *   tyr ai:code ["<directory>"] "<prompt>" --priority <lvl>  Overrides the routing priority
  *
  * Priority levels (see TaskPriority / AIVendorManager.resolvePriority): baja-prioridad,
  * baja-media-prioridad, media-prioridad (default), media-alta-prioridad, alta-prioridad,
@@ -26,30 +42,19 @@ import type { TyrContext, TaskPriority } from '@orxataguy/tyr';
  * Also consults MemoryManager for past conversations relevant to this prompt (deterministic
  * keyword match, no extra AI call — nothing is injected unless it's actually likely to help), and
  * records this run once it succeeds so future ai:code/ai:chat calls on the same project can find it.
+ *
+ * @example
+ * tyr ai:code "Add input validation to the signup form"
+ * // Works on the current directory
+ *
+ * @example
+ * tyr ai:code ./packages/api "Fix the off-by-one error in the pagination helper"
+ * // Works on ./packages/api (relative or absolute)
+ *
+ * @example
+ * tyr ai:code "Refactor the logger to support log levels" --priority alta-prioridad
+ * // Overrides the routing priority
  */
-
-const AGENTS_MD_FILENAME = 'AGENTS.md';
-const MAX_DIFF_LOG_CHARS = 4000;
-
-function isDirectory(target: string): boolean {
-    try {
-        return statSync(target).isDirectory();
-    } catch {
-        return false;
-    }
-}
-
-function parseFlag(args: string[], name: string): string | undefined {
-    const index = args.indexOf(name);
-    return index !== -1 ? args[index + 1] : undefined;
-}
-
-function stripFlag(args: string[], name: string): string[] {
-    const index = args.indexOf(name);
-    if (index === -1) return args;
-    return [...args.slice(0, index), ...args.slice(index + 2)];
-}
-
 export default ({ run, fail, logger, fs, path, aiContext, prompts, tokens, memory }: TyrContext) => {
     return async (args: string[]) => {
         logger.info('Running command: ai:code');
@@ -63,7 +68,7 @@ export default ({ run, fail, logger, fs, path, aiContext, prompts, tokens, memor
 
         if (positional.length > 0) {
             const candidate = path.resolve(cwd, positional[0]);
-            if (isDirectory(candidate)) {
+            if (isDirectory(fs, candidate)) {
                 targetDir = candidate;
                 promptArgs = positional.slice(1);
             }
@@ -73,7 +78,7 @@ export default ({ run, fail, logger, fs, path, aiContext, prompts, tokens, memor
         if (!prompt) {
             fail('You must specify what you want the AI to do.', 'Usage: tyr ai:code ["<directory>"] "<prompt>" [--priority <level>]');
         }
-        if (!isDirectory(targetDir)) {
+        if (!isDirectory(fs, targetDir)) {
             fail(`Directory does not exist: ${targetDir}`, 'Check the given path.');
         }
 
