@@ -10,6 +10,68 @@ interface FileSummary {
     relativeSourcePath: string;
 }
 
+/**
+ * Scaffolds a test template file next to a given source file — no AI call, purely deterministic.
+ *
+ * For JS/TS sources (.js, .jsx, .ts, .tsx, .mjs, .cjs) it writes a `describe`/`it` skeleton with
+ * TODO placeholders and a list of suggested test cases inferred from the source content (async
+ * flows, error handling, classes, functions). For any other extension it writes a generic Markdown
+ * testing guide with the same suggested-case heuristics. The output path mirrors the source file's
+ * name with `.test` inserted before its extension (or `.test.txt` if the source has none).
+ *
+ * @example
+ * tyr ai:test src/utils/formatDate.ts
+ * // Writes src/utils/formatDate.test.ts with a Jest-style describe/it skeleton
+ *
+ * @example
+ * tyr ai:test scripts/deploy.sh
+ * // Writes scripts/deploy.test.txt with a generic Markdown testing guide
+ */
+export default ({ fail, logger, fs, path }: TyrContext) => {
+    return async (args: string[]) => {
+        logger.info('Running command: ai:test');
+
+        try {
+            const inputPathArg: string | undefined = args[0];
+
+            if (!inputPathArg) {
+                fail('You must provide the path to a source file.', 'Usage: tyr ai:test <file>');
+            }
+
+            const sourceFilePath: string = path.resolve(process.cwd(), inputPathArg as string);
+            logger.info(`Source file received: ${sourceFilePath}`);
+
+            if (!fs.exists(sourceFilePath)) {
+                fail(`Source file does not exist: ${sourceFilePath}`, 'Check the given path and try again.');
+            }
+
+            const sourceContent = await fs.read(sourceFilePath);
+            const normalizedContent: string = typeof sourceContent === 'string' ? sourceContent : String(sourceContent ?? '');
+
+            logger.info('Source file found, reading content...');
+            const summary: FileSummary = buildFileSummary(sourceFilePath, normalizedContent, path);
+            const testFilePath: string = getTestFilePath(sourceFilePath, path);
+            const extension: string = path.extname(sourceFilePath).toLowerCase();
+
+            logger.info(`Generating test template for extension: ${extension || '(none)'}`);
+
+            const testContent: string = JS_TS_EXTENSIONS.has(extension)
+                ? buildJsTsTemplate(sourceFilePath, summary, normalizedContent, path)
+                : buildGenericTemplate(summary, normalizedContent);
+
+            await fs.write(testFilePath, testContent);
+
+            logger.info(`Test template written to: ${testFilePath}`);
+            logger.success(`Command ai:test finished! Generated: ${testFilePath}`);
+        } catch (error: unknown) {
+            const message: string = error instanceof Error ? error.message : 'Unknown error';
+            fail(`Failed to generate the test template: ${message}`);
+        }
+    };
+};
+
+export const Test = { args: ['file'] };
+
 function getTestFilePath(filePath: string, pathManager: TyrContext['path']): string {
     const directory: string = pathManager.dirname(filePath);
     const extension: string = pathManager.extname(filePath);
@@ -135,64 +197,3 @@ TODO:
 `;
 }
 
-/**
- * Scaffolds a test template file next to a given source file — no AI call, purely deterministic.
- *
- * For JS/TS sources (.js, .jsx, .ts, .tsx, .mjs, .cjs) it writes a `describe`/`it` skeleton with
- * TODO placeholders and a list of suggested test cases inferred from the source content (async
- * flows, error handling, classes, functions). For any other extension it writes a generic Markdown
- * testing guide with the same suggested-case heuristics. The output path mirrors the source file's
- * name with `.test` inserted before its extension (or `.test.txt` if the source has none).
- *
- * @example
- * tyr ai:test src/utils/formatDate.ts
- * // Writes src/utils/formatDate.test.ts with a Jest-style describe/it skeleton
- *
- * @example
- * tyr ai:test scripts/deploy.sh
- * // Writes scripts/deploy.test.txt with a generic Markdown testing guide
- */
-export default ({ fail, logger, fs, path }: TyrContext) => {
-    return async (args: string[]) => {
-        logger.info('Running command: ai:test');
-
-        try {
-            const inputPathArg: string | undefined = args[0];
-
-            if (!inputPathArg) {
-                fail('You must provide the path to a source file.', 'Usage: tyr ai:test <file>');
-            }
-
-            const sourceFilePath: string = path.resolve(process.cwd(), inputPathArg as string);
-            logger.info(`Source file received: ${sourceFilePath}`);
-
-            if (!fs.exists(sourceFilePath)) {
-                fail(`Source file does not exist: ${sourceFilePath}`, 'Check the given path and try again.');
-            }
-
-            const sourceContent = await fs.read(sourceFilePath);
-            const normalizedContent: string = typeof sourceContent === 'string' ? sourceContent : String(sourceContent ?? '');
-
-            logger.info('Source file found, reading content...');
-            const summary: FileSummary = buildFileSummary(sourceFilePath, normalizedContent, path);
-            const testFilePath: string = getTestFilePath(sourceFilePath, path);
-            const extension: string = path.extname(sourceFilePath).toLowerCase();
-
-            logger.info(`Generating test template for extension: ${extension || '(none)'}`);
-
-            const testContent: string = JS_TS_EXTENSIONS.has(extension)
-                ? buildJsTsTemplate(sourceFilePath, summary, normalizedContent, path)
-                : buildGenericTemplate(summary, normalizedContent);
-
-            await fs.write(testFilePath, testContent);
-
-            logger.info(`Test template written to: ${testFilePath}`);
-            logger.success(`Command ai:test finished! Generated: ${testFilePath}`);
-        } catch (error: unknown) {
-            const message: string = error instanceof Error ? error.message : 'Unknown error';
-            fail(`Failed to generate the test template: ${message}`);
-        }
-    };
-};
-
-export const Test = { args: ['file'] };

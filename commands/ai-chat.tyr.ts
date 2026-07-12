@@ -77,96 +77,6 @@ interface FileIndex {
     byBase: Map<string, string[]>;
 }
 
-function isDirectory(fs: any, target: string): boolean {
-    try {
-        return fs.stat(target).isDirectory();
-    } catch {
-        return false;
-    }
-}
-
-function parseFlag(args: string[], name: string): string | undefined {
-    const index = args.indexOf(name);
-    return index !== -1 ? args[index + 1] : undefined;
-}
-
-/** Bounded recursive walk of `rootDir`, collecting relative (forward-slash) file paths for mention
- *  detection. Ignores the same kind of noise directories ChatManager's file browser skips, plus a
- *  few more that are never worth matching against (build output, vendored deps). */
-async function indexFiles(fs: any, path: any, rootDir: string): Promise<string[]> {
-    const results: string[] = [];
-
-    async function walk(dir: string, relBase: string): Promise<void> {
-        if (results.length >= MAX_INDEXED_FILES) return;
-
-        let entries;
-        try {
-            entries = await fs.readdir(dir, { withFileTypes: true });
-        } catch {
-            return;
-        }
-
-        for (const entry of entries) {
-            if (results.length >= MAX_INDEXED_FILES) return;
-            if (entry.name === '.DS_Store' || IGNORED_DIRS.has(entry.name)) continue;
-
-            const rel = relBase ? `${relBase}/${entry.name}` : entry.name;
-            if (entry.isDirectory()) {
-                await walk(path.join(dir, entry.name), rel);
-            } else if (entry.isFile()) {
-                results.push(rel);
-            }
-        }
-    }
-
-    await walk(rootDir, '');
-    return results;
-}
-
-function buildFileIndex(paths: string[]): FileIndex {
-    const byPath = new Set(paths);
-    const byBase = new Map<string, string[]>();
-
-    for (const p of paths) {
-        const base = p.split('/').pop() ?? p;
-        const existing = byBase.get(base);
-        if (existing) existing.push(p);
-        else byBase.set(base, [p]);
-    }
-
-    return { byPath, byBase };
-}
-
-/** Deterministic, cheap (no AI call) detection of file mentions in a chat message: pulls out
- *  filename-like tokens (contain a dot followed by an extension) and looks them up against the
- *  index, first as a full relative path, then by basename. */
-function detectMentionedFiles(text: string, index: FileIndex): string[] {
-    if (!text) return [];
-
-    const tokens = text.match(/[\w./-]+\.[A-Za-z0-9]+/g) ?? [];
-    const matches = new Set<string>();
-
-    for (const rawToken of tokens) {
-        if (matches.size >= MAX_MENTION_MATCHES_PER_MESSAGE) break;
-
-        const token = rawToken.replace(/^[.,;:!?'"()]+|[.,;:!?'"()]+$/g, '');
-        if (index.byPath.has(token)) {
-            matches.add(token);
-            continue;
-        }
-
-        const base = token.split('/').pop() ?? token;
-        const candidates = index.byBase.get(base);
-        if (!candidates) continue;
-        for (const candidate of candidates) {
-            if (matches.size >= MAX_MENTION_MATCHES_PER_MESSAGE) break;
-            matches.add(candidate);
-        }
-    }
-
-    return [...matches];
-}
-
 /**
  * Opens a local chat + file browser UI backed by the configured AI vendor.
  *
@@ -474,3 +384,93 @@ export default ({ fail, logger, fs, path, aiContext, aiVendor, chat, prompts, to
 };
 
 export const Test = { args: [] };
+
+function isDirectory(fs: any, target: string): boolean {
+    try {
+        return fs.stat(target).isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+function parseFlag(args: string[], name: string): string | undefined {
+    const index = args.indexOf(name);
+    return index !== -1 ? args[index + 1] : undefined;
+}
+
+/** Bounded recursive walk of `rootDir`, collecting relative (forward-slash) file paths for mention
+ *  detection. Ignores the same kind of noise directories ChatManager's file browser skips, plus a
+ *  few more that are never worth matching against (build output, vendored deps). */
+async function indexFiles(fs: any, path: any, rootDir: string): Promise<string[]> {
+    const results: string[] = [];
+
+    async function walk(dir: string, relBase: string): Promise<void> {
+        if (results.length >= MAX_INDEXED_FILES) return;
+
+        let entries;
+        try {
+            entries = await fs.readdir(dir, { withFileTypes: true });
+        } catch {
+            return;
+        }
+
+        for (const entry of entries) {
+            if (results.length >= MAX_INDEXED_FILES) return;
+            if (entry.name === '.DS_Store' || IGNORED_DIRS.has(entry.name)) continue;
+
+            const rel = relBase ? `${relBase}/${entry.name}` : entry.name;
+            if (entry.isDirectory()) {
+                await walk(path.join(dir, entry.name), rel);
+            } else if (entry.isFile()) {
+                results.push(rel);
+            }
+        }
+    }
+
+    await walk(rootDir, '');
+    return results;
+}
+
+function buildFileIndex(paths: string[]): FileIndex {
+    const byPath = new Set(paths);
+    const byBase = new Map<string, string[]>();
+
+    for (const p of paths) {
+        const base = p.split('/').pop() ?? p;
+        const existing = byBase.get(base);
+        if (existing) existing.push(p);
+        else byBase.set(base, [p]);
+    }
+
+    return { byPath, byBase };
+}
+
+/** Deterministic, cheap (no AI call) detection of file mentions in a chat message: pulls out
+ *  filename-like tokens (contain a dot followed by an extension) and looks them up against the
+ *  index, first as a full relative path, then by basename. */
+function detectMentionedFiles(text: string, index: FileIndex): string[] {
+    if (!text) return [];
+
+    const tokens = text.match(/[\w./-]+\.[A-Za-z0-9]+/g) ?? [];
+    const matches = new Set<string>();
+
+    for (const rawToken of tokens) {
+        if (matches.size >= MAX_MENTION_MATCHES_PER_MESSAGE) break;
+
+        const token = rawToken.replace(/^[.,;:!?'"()]+|[.,;:!?'"()]+$/g, '');
+        if (index.byPath.has(token)) {
+            matches.add(token);
+            continue;
+        }
+
+        const base = token.split('/').pop() ?? token;
+        const candidates = index.byBase.get(base);
+        if (!candidates) continue;
+        for (const candidate of candidates) {
+            if (matches.size >= MAX_MENTION_MATCHES_PER_MESSAGE) break;
+            matches.add(candidate);
+        }
+    }
+
+    return [...matches];
+}

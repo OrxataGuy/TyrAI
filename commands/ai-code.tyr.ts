@@ -3,25 +3,6 @@ import type { TyrContext, TaskPriority } from '@tyrframework/cli';
 const AGENTS_MD_FILENAME = 'AGENTS.md';
 const MAX_DIFF_LOG_CHARS = 4000;
 
-function isDirectory(fs: any, target: string): boolean {
-    try {
-        return fs.stat(target).isDirectory();
-    } catch {
-        return false;
-    }
-}
-
-function parseFlag(args: string[], name: string): string | undefined {
-    const index = args.indexOf(name);
-    return index !== -1 ? args[index + 1] : undefined;
-}
-
-function stripFlag(args: string[], name: string): string[] {
-    const index = args.indexOf(name);
-    if (index === -1) return args;
-    return [...args.slice(0, index), ...args.slice(index + 2)];
-}
-
 /**
  * Asks the AI to write or modify code inside a project.
  *
@@ -147,3 +128,22 @@ export default ({ run, fail, logger, fs, path, aiContext, prompts, tokens, memor
 };
 
 export const Test = { args: [] };
+
+function isDirectory(fs: any, target: string): boolean {
+    try {
+        return fs.stat(target).isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+function parseFlag(args: string[], name: string): string | undefined {
+    const index = args.indexOf(name);
+    return index !== -1 ? args[index + 1] : undefined;
+}
+
+function stripFlag(args: string[], name: string): string[] {
+    const index = args.indexOf(name);
+    if (index === -1) return args;
+    return [...args.slice(0, index), ...args.slice(index + 2)];
+}

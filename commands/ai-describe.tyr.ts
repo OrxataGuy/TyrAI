@@ -7,19 +7,6 @@ const AGENTS_MD_FILENAME = 'AGENTS.md';
 // override with --priority.
 const LARGE_FILE_PRIORITY_THRESHOLD_CHARS = 20000;
 
-function isDirectory(fs: any, target: string): boolean {
-    try {
-        return fs.stat(target).isDirectory();
-    } catch {
-        return false;
-    }
-}
-
-function parseFlag(args: string[], name: string): string | undefined {
-    const index = args.indexOf(name);
-    return index !== -1 ? args[index + 1] : undefined;
-}
-
 /**
  * Generates AI context documentation (AGENTS.md-style) from the project's code.
  *
@@ -138,3 +125,16 @@ export default ({ fail, logger, fs, path, aiContext, prompts, tokens, memory }: 
 };
 
 export const Test = { args: [] };
+
+function isDirectory(fs: any, target: string): boolean {
+    try {
+        return fs.stat(target).isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+function parseFlag(args: string[], name: string): string | undefined {
+    const index = args.indexOf(name);
+    return index !== -1 ? args[index + 1] : undefined;
+}
